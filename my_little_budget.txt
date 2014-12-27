@@ -1,0 +1,169 @@
+#-*-coding:utf8;-*-
+#qpy:2
+#qpy:console
+
+import androidhelper
+import os.path
+HERE = os.path.dirname(os.path.abspath(__file__))
+PLAYERS=[]
+AVERAGE=0
+TOTAL=[]
+BALANCE=[]
+
+
+def main():
+    print "welcome to the main menu of 'My little budget' \n"
+    print "press 'e' to add a new expense\n"
+    print "press 'b' to add a pay back\n"
+    print "press 'd' to see the debts\n"
+    print "press 'p' to add a new player\n"
+    print "press 'l' to load a table\n"
+    print "press 's' to save a table\n"
+
+    result = raw_input("choice: ")
+    print result
+
+    if result == "e": 
+        expenses()
+    elif result == "b": 
+        payback()
+    elif result == "d": 
+        debts()
+    elif result == "p": 
+        players()
+    elif result == "l": 
+        load()
+    elif result == "s": 
+        save()
+    else:
+        print("incorrect selection please try again :")
+        main()
+
+def expenses():
+    print "press 'r' to return to the main menu\n"
+    if PLAYERS == []:
+        print "there are no players please return to main menu and select 4 to add a new player\n"
+    else:
+        print "select the players who paied today: \n"
+        print "total of player =%s" %len(PLAYERS)
+        for j in range(len(PLAYERS)):
+            print "%s: name: %s \n" %(j+1, PLAYERS[j])
+    result = raw_input("choice :")
+    print type(result)
+    if result == "r":
+        main()
+    elif result in range(len(PLAYERS)):
+        expenseAdd(result)
+        print "add of a new expense for %s" %PLAYERS[result]
+    main()
+    
+def expenseAdd(poorPlayer):
+    expense = raw_input("enter the amount of the expense of %s" %PLAYERS(poorPlayer))
+    if type(expense) is int :
+        TOTAL[poorPlayer] += expense
+        print "the total amount of the expenses for %s is %s" %(PLAYERS[poorPlayer], TOTAL[poorPlayer])
+        average()
+        
+def average():
+    for i in TOTAL:
+        SUM+=i
+        AVERAGE=SUM/len(PLAYERS)
+
+def payback():
+    #to be continued....
+    print "press 'r' to return to the main menu\n"
+    if result == "r":
+        main()
+
+def debts():
+    #to be continued....
+    print "here are the debts of the players:"
+    
+    
+def players():
+    print "press 'a' to add a player"
+    print "press 's' to see the players"
+    print "press 'd' ro delete a player"
+    print "press 'r' to return to the main menu\n"
+    result = raw_input ("choice: ")
+    if result == "r":
+        main()
+    if result == "a":
+        PLAYERS.append(raw_input("enter your players name:"))
+        BALANCE.append(0)
+        TOTAL.append(0)
+        print "player succesfully added"
+        print PLAYERS
+        players()
+    if result == "s" :
+        print "total of player =%s" %len(PLAYERS)
+        for j in range(len(PLAYERS)):
+            print "|name: %s \t | total of expenses = %s \t | balance = %s" %(PLAYERS[j], TOTAL[j], BALANCE[j])
+    if result == "d" :
+        name = raw_input("enter the name of the player to delete:")
+        i = 0
+        for compare in PLAYERS:
+            i+=1
+            if compare == name:
+                del PLAYERS[i]
+                flag = 1
+        if flag == 1:
+            print "succesfull deletion of %s" %name
+            players()
+        else:
+            print "unable to find %s in your database" %name
+            players()
+    else :
+        print "incorrect selection please try again"
+        players()
+    
+    #to be continued....
+    
+def load():
+    #to be continued....
+    filename = raw_input("enter the name of the data base you want to load: ")
+    filename = filename+".txt"
+    for f in (f for f in os.listdir(HERE) if f==filename):
+        print "found file :", f
+    answer = raw_input("do you want to open the file %s ? (y or n)" %f)
+    if answer == "y":
+        myFile = open(f, "r")
+        lines = myFile.read()
+        for i in lines:
+            if i == "PLAYERS":
+                flagPlayers =1
+            elif flagPlayers ==1:
+                PLAYERS.append(i)
+            elif i == "TOTAL":
+                flagPlayer = 0
+                flagTotal=1
+            elif flagTotal==1:
+                TOTAL.append(i)
+            elif i == "AVERAGE":
+                flagTotal=0
+                flagAverage=1
+            elif flagAverage==1:
+                AVERAGE.append(i)
+    else :
+        print "nothing to open"
+    
+    main()
+    
+def save():
+    filename = raw_input("enter the name of the data base you want to save: ")
+    filename = filename+".txt"
+    myFile = open(filename, "w")
+    myFile.write("PLAYERS\n")
+    for playersLine in PLAYERS:
+        myFile.write(str(playersLine)+"\n")
+    myFile.write("TOTAL\n")
+    for totalLine in TOTAL:
+        myFile.write(str(totalLine)+"\n")
+    myFile.write("BALANCE\n")
+    for balanceLine in BALANCE:
+        myFile.write(str(balanceLine)+"\n")
+    myFile.close()
+    main()
+
+if __name__ == "__main__":     
+    main() 
