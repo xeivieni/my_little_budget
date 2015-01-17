@@ -98,6 +98,8 @@
      <string>file</string>
     </property>
     <addaction name="actionExit"/>
+    <addaction name="actionLoad"/>
+    <addaction name="actionSave"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -105,6 +107,16 @@
   <action name="actionExit">
    <property name="text">
     <string>exit</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>load</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>save</string>
    </property>
   </action>
  </widget>

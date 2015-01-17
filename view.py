@@ -17,13 +17,29 @@ class main_window(QtGui.QMainWindow):
         #    headers.append(i[0])
         self.model = PlayerModel(self.players, self.headers)
         self.tableView.setModel(self.model)
+        self.initButtons()
+
+
+    def initButtons(self):
         self.plusButton.clicked.connect(self.addPlayer)
+        self.actionQuit.triggered.connect(self.quit)
+        self.actionSave.triggered.connect(self.save)
+        self.actionLoad.triggered.connect(self.load)
+
+
+
+    def save(self):
+        print 'saving database'
+
+
+    def load(self):
+        print 'loading database'
 
 
     def addPlayer(self):
         name = raw_input('enter the name of the player')
-        A = Players(name)
-        print A.__name
+        self.players[name] = Players(name)
+        print players[name].name
         self.model.insertRows(name)
 
 
@@ -33,3 +49,5 @@ if __name__ == '__main__':
     window = main_window()
     window.show()
     app.exec_()
+    B = Players('clem')
+    print B.name
