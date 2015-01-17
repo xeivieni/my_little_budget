@@ -25,7 +25,6 @@ start=0
 #         print 'fonction calcul de la balance'
 
 
-print 'test'
 
 def expenseAdd(index, amount):
     print "index =", index, "amount = ", amount
