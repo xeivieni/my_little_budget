@@ -11,7 +11,6 @@ import sys
 RED   = QtGui.QColor(255,0,0)
 GREEN = QtGui.QColor(0,255,0)
 BLUE  = QtGui.QColor(0,0,255)
-YELLOW = QtGui.QColor("#FFFF00")
 
 
 class main_window(QtGui.QMainWindow):
@@ -20,19 +19,10 @@ class main_window(QtGui.QMainWindow):
         uic.loadUi("mainwindow.ui", self)
         self.players = OrderedDict()
         self.headers = ["Total", "Balance"]
-        self.currency = QtCore.QStringList()
-        self.currency << "Euro" << "Dollar" << "Pounds"
-        #self.average = ((self.players[i].__total/len(self.players.items())) for i in self.players.items())
-        #print 'moyenne =', self.average
-        #for i in info:
-        #    headers.append(i[0])
-        print self.players.keys()
-        self.tablemodel = PlayerModel(self.players, self.headers)
-        self.currencymodel = ListModel(self.currency)
-        self.playersmodel = ListModel(self.players.keys())
-        self.tableView.setModel(self.tablemodel)
-        self.currencyBox.setModel(self.currencymodel)
-        self.playerBox.setModel(self.playersmodel)
+        self.table_model = PlayerModel(self.players, self.headers)
+        self.players_model = ListModel(self.players)
+        self.tableView.setModel(self.table_model)
+        self.playerBox.setModel(self.players_model)
         self.initButtons()
 
     def averageCalculation(self):
@@ -46,9 +36,19 @@ class main_window(QtGui.QMainWindow):
     def initButtons(self):
         self.plusButton.clicked.connect(self.addPlayer)
         self.minusButton.clicked.connect(self.delPlayer)
+        self.addButton.clicked.connect(self.addExpense_)
         self.actionQuit.triggered.connect(self.close)
         self.actionSave.triggered.connect(self.save)
         self.actionLoad.triggered.connect(self.load)
+
+    def addExpense_(self):
+        index = self.playerBox.currentIndex()
+        try:
+            amount = float(self.amountField.text())
+        except ValueError:
+            QtGui.QMessageBox.information(self, 'Warning', 'Please enter a number')
+        self.players.values()[index].addExpense(amount)
+        QtGui.QMessageBox.information('self', 'Success', 'Expense successfully added')
 
 
     def save(self):
@@ -84,8 +84,9 @@ class main_window(QtGui.QMainWindow):
 
 
     def delPlayer(self):
-        print 'index ? ',self.tablemodel.rowCount(QtCore.QModelIndex())
-        self.tablemodel.removeRows(0)
+        index = self.tableView.currentIndex()
+        print index.row
+        self.table_model.removeRows(index)
 
     def addPlayer(self, text = '', ok = ''):
         if text is False and ok is not True:
@@ -97,9 +98,8 @@ class main_window(QtGui.QMainWindow):
         if ok :
             name = str(text)
             self.players[name] = Players(name)
-            self.tablemodel.insertRows()
+            self.table_model.insertRows()
         self.averageCalculation()
-
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

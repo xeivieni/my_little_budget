@@ -5,40 +5,22 @@ import sys
 
 
 class ListModel(QtCore.QAbstractListModel):
-    def __init__(self, headers = [], parent=None):
+    def __init__(self, headers, parent=None):
         QtCore.QAbstractListModel.__init__(self, parent)
         self.items = headers
+        print self.items
 
     def rowCount(self, parent):
         return len(self.items)
 
     def flags(self, index):
-        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if role == QtCore.Qt.EditRole:
-
-            row = index.row()
-            self.infos[row] = value
-            self.dataChanged.emit(index)
-            return True
-        return False
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def data(self, index, role):
 
-        if role == QtCore.Qt.EditRole:
-            row = index.row()
-            column = index.column()
-            if column == 0:
-                return self.items[row]
-
-            elif column == 1:
-                return self.items[row]
-
         if role == QtCore.Qt.DisplayRole:
-
             row = index.row()
-            return self.items[row]
+            return self.items.values()[row].name
 
 
 class PlayerModel(QtCore.QAbstractTableModel):
@@ -58,7 +40,7 @@ class PlayerModel(QtCore.QAbstractTableModel):
 
 
     def flags(self, index):
-        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
 
     def data(self, index, role):
@@ -81,17 +63,6 @@ class PlayerModel(QtCore.QAbstractTableModel):
 
             elif column == 1:
                 return self.infos.values()[row].balanceCalculation()
-
-
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if role == QtCore.Qt.EditRole:
-
-            row = index.row()
-            column = index.column()
-            self.infos[row][column] = value
-            self.dataChanged.emit(index, index)
-            return True
-        return False
 
 
     def headerData(self, section, orientation, role):
@@ -117,8 +88,7 @@ class PlayerModel(QtCore.QAbstractTableModel):
 
 
     def removeRows(self,  position, rows = 1, parent =  QtCore.QModelIndex()):
-        self.beginRemoveRows(parent, position, position + rows - 1)
-        print position
+        self.beginRemoveRows(parent, position)
         self.endRemoveRows()
         return True
 
