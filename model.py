@@ -30,11 +30,10 @@ class PlayerModel(QtCore.QAbstractTableModel):
             row = index.row()
             column = index.column()
             if column == 0:
-                return self.infos[row].total
+                return self.infos.values()[row].total
+
             elif column == 1:
-                return self.infos[row].balance
-
-
+                return self.infos.values()[row].balance
 
         if role == QtCore.Qt.ToolTipRole:
             row = index.row()
@@ -45,9 +44,11 @@ class PlayerModel(QtCore.QAbstractTableModel):
 
             row = index.row()
             column = index.column()
-            value = self.infos[row][column]
+            if column == 0:
+                return self.infos.values()[row].total
 
-            return value
+            elif column == 1:
+                return self.infos.values()[row].balance
 
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
@@ -62,21 +63,18 @@ class PlayerModel(QtCore.QAbstractTableModel):
 
 
     def headerData(self, section, orientation, role):
-
         if role == QtCore.Qt.DisplayRole:
 
             if orientation == QtCore.Qt.Horizontal:
 
-                if section < len(self.__headers):
+                if section < len(self.headers):
                     return self.headers[section]
                 else:
                     return "not implemented"
             else:
-                return QtCore.QString("%1").arg(section)
+                return self.infos.values()[section].name
 
-    #=====================================================#
-    #INSERTING & REMOVING
-    #=====================================================#
+
     def insertRows(self, position = 0,rows=1, parent = QtCore.QModelIndex()):
         position = len(self.infos.keys())
         self.beginInsertRows(parent, position, position + rows - 1)
@@ -110,7 +108,7 @@ class Players():
     def addExpense(self, amount):
         self.total += float(amount)
         print "new total for %s = %s " %(self.name, self.total)
-        self.balance()
+        #self.balance()
 
 
     def balance(self):

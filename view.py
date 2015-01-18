@@ -22,26 +22,43 @@ class main_window(QtGui.QMainWindow):
 
     def initButtons(self):
         self.plusButton.clicked.connect(self.addPlayer)
-        self.actionQuit.triggered.connect(self.quit)
+        self.actionQuit.triggered.connect(self.close)
         self.actionSave.triggered.connect(self.save)
         self.actionLoad.triggered.connect(self.load)
 
 
 
     def save(self):
-        print 'saving database'
+        path = QtGui.QFileDialog.getOpenFileName(self, "Save Database",
+                                                '/Users/clementmondion/Documents/personal_projects/my_little_budget/src/',
+                                                 "TEXT (*.txt)")
+        my_file = open(path, 'w')
+        for key in self.players.keys():
+            my_file.write(key + ":" + str(self.players[key].total) + "\n")
+        my_file.close()
+
 
 
     def load(self):
-        print 'loading database'
+        path = QtGui.QFileDialog.getOpenFileName(self, "Open Database",
+                                                '/Users/clementmondion/Documents/personal_projects/my_little_budget/src/',
+                                                 "TEXT (*.txt)")
+        my_file = open(path, 'r')
+        for line in my_file.readlines():
+            elements = line.split(":")
+            self.addPlayer(elements[0].strip("'"))
 
 
-    def addPlayer(self):
-        name = raw_input('enter the name of the player')
+    def addPlayer(self, text = ''):
+        if text is False:
+            text, ok = QtGui.QInputDialog.getText(self, 'Add a new player',
+                                                  'Enter your name:')
+            while text in self.players.keys():
+                text, ok = QtGui.QInputDialog.getText(self, 'Add error : name already taken',
+                                                  'Please choose another name:')
+        name = str(text)
         self.players[name] = Players(name)
-        print players[name].name
         self.model.insertRows(name)
-
 
 
 if __name__ == '__main__':
@@ -49,5 +66,3 @@ if __name__ == '__main__':
     window = main_window()
     window.show()
     app.exec_()
-    B = Players('clem')
-    print B.name
