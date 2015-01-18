@@ -4,6 +4,43 @@ from PyQt4 import QtGui, QtCore, uic
 import sys
 
 
+class ListModel(QtCore.QAbstractListModel):
+    def __init__(self, headers = [], parent=None):
+        QtCore.QAbstractListModel.__init__(self, parent)
+        self.items = headers
+
+    def rowCount(self, parent):
+        return len(self.items)
+
+    def flags(self, index):
+        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if role == QtCore.Qt.EditRole:
+
+            row = index.row()
+            self.infos[row] = value
+            self.dataChanged.emit(index)
+            return True
+        return False
+
+    def data(self, index, role):
+
+        if role == QtCore.Qt.EditRole:
+            row = index.row()
+            column = index.column()
+            if column == 0:
+                return self.items[row]
+
+            elif column == 1:
+                return self.items[row]
+
+        if role == QtCore.Qt.DisplayRole:
+
+            row = index.row()
+            return self.items[row]
+
+
 class PlayerModel(QtCore.QAbstractTableModel):
 
     def __init__(self, infos = {}, headers = [], parent = None):
@@ -17,7 +54,7 @@ class PlayerModel(QtCore.QAbstractTableModel):
 
 
     def columnCount(self, parent):
-        return len(self.infos.values())
+        return 2
 
 
     def flags(self, index):
@@ -33,12 +70,7 @@ class PlayerModel(QtCore.QAbstractTableModel):
                 return self.infos.values()[row].total
 
             elif column == 1:
-                return self.infos.values()[row].balance
-
-        if role == QtCore.Qt.ToolTipRole:
-            row = index.row()
-            column = index.column()
-            return "Name: " + self.infos[row][column]
+                return self.infos.values()[row].balanceCalculation()
 
         if role == QtCore.Qt.DisplayRole:
 
@@ -48,7 +80,7 @@ class PlayerModel(QtCore.QAbstractTableModel):
                 return self.infos.values()[row].total
 
             elif column == 1:
-                return self.infos.values()[row].balance
+                return self.infos.values()[row].balanceCalculation()
 
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
@@ -75,12 +107,19 @@ class PlayerModel(QtCore.QAbstractTableModel):
                 return self.infos.values()[section].name
 
 
-    def insertRows(self, position = 0,rows=1, parent = QtCore.QModelIndex()):
+    def insertRows(self, position = 0, rows=1, parent = QtCore.QModelIndex()):
         position = len(self.infos.keys())
         self.beginInsertRows(parent, position, position + rows - 1)
 
         self.endInsertRows()
 
+        return True
+
+
+    def removeRows(self,  position, rows = 1, parent =  QtCore.QModelIndex()):
+        self.beginRemoveRows(parent, position, position + rows - 1)
+        print position
+        self.endRemoveRows()
         return True
 
 
@@ -100,6 +139,7 @@ class PlayerModel(QtCore.QAbstractTableModel):
 
 
 class Players():
+    average = 0
     def __init__(self, name):
         self.name = name
         self.total = 0
@@ -107,11 +147,8 @@ class Players():
 
     def addExpense(self, amount):
         self.total += float(amount)
-        print "new total for %s = %s " %(self.name, self.total)
-        #self.balance()
+        self.balanceCalculation()
 
-
-    def balance(self):
-        self.balance = self.total - 1
-
-
+    def balanceCalculation(self):
+        self.balance = self.total - Players.average
+        return self.balance
